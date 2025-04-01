@@ -1,22 +1,26 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS  # Import CORS
-import requests  # Add this import
+from flask_cors import CORS 
+import requests 
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
+CORS(app) 
 
 class LLMInterface:
     def __init__(self, api_url: str, api_key: str):
         self.api_url = api_url
         self.headers = {"Authorization": f"Bearer {api_key}"}
-        self.system_message = """You are an AI that generates high-quality and visually appealing frontend code in React.js using MUI. Follow these strict guidelines:
-        - **Design Aesthetic**: Ensure a modern, and beautiful design.
-        - **Typography**: Use only the 'Fira Sans' font.
-        - **Color Palette**: Apply these colors strictly:
-          - Primary: #1B374C
-          - Accent: #F39325
+        self.system_message = """You are an AI that generates only JSON code for frontend components in React.js using MUI. Follow these strict guidelines:
+        - **Format**: Output only JSON, no explanations, no additional text.
+        - **Structure**: Each component should be an object with:
+          - "type": The MUI component type (e.g., "container", "typography", "box").
+          - "props": A dictionary containing the properties of the component.
+          - "children": Either a string (for text) or a list of child components.
+        - **Design Aesthetic**: Follow these styles:
+          - Primary color: #1B374C
+          - Accent color: #F39325
           - Background: #F5F5F6
-          - Text: #000000 or #FFFFFF
+          - Typography: 'Fira Sans' font
+        - **Strict Rules**: Only return a valid JSON object. Do not include any additional text.
         """
         self.model = "Qwen/Qwen2.5-Coder-7B-Instruct-fast"
     
@@ -43,10 +47,11 @@ def generate_code():
         return jsonify({"error": "No prompt provided"}), 400
     
     api_url = "https://router.huggingface.co/nebius/v1/chat/completions"
-    api_key = "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"  # Replace with your HuggingFace API key
+    api_key = "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"  
     llm = LLMInterface(api_url, api_key)
     response = llm.query(prompt)
     return jsonify({"response": response})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
+
