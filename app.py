@@ -1,6 +1,10 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS 
 import requests 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app) 
@@ -30,7 +34,7 @@ class LLMInterface:
                 {"role": "system", "content": self.system_message},
                 {"role": "user", "content": prompt}
             ],
-            "max_tokens": 500,
+            "max_tokens": 1000,
             "model": self.model
         }
         response = requests.post(self.api_url, headers=self.headers, json=payload)
@@ -47,7 +51,11 @@ def generate_code():
         return jsonify({"error": "No prompt provided"}), 400
     
     api_url = "https://router.huggingface.co/nebius/v1/chat/completions"
-    api_key = "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"  
+    api_key = os.getenv("HF_API_KEY")  
+    
+    if not api_key:
+        return jsonify({"error": "API key is missing. Set it in the .env file."}), 500
+    
     llm = LLMInterface(api_url, api_key)
     response = llm.query(prompt)
     return jsonify({"response": response})
