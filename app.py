@@ -43,6 +43,11 @@ class LLMInterface:
         else:
             return f"Error: {response.status_code}, {response.text}"
 
+# Route de base
+@app.route('/')
+def home():
+    return "Welcome to the AI Code Generator API!"
+
 @app.route('/generate', methods=['POST'])
 def generate_code():
     data = request.get_json()
@@ -62,4 +67,3 @@ def generate_code():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
-
