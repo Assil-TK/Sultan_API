@@ -13,7 +13,7 @@ class LLMInterface:
     def __init__(self, api_url: str, api_key: str):
         self.api_url = api_url
         self.headers = {"Authorization": f"Bearer {api_key}"}
-self.system_message = """
+        self.system_message = """
 You are an AI that generates only valid JSON arrays representing React.js frontend components using MUI (Material-UI). Follow these strict rules:
 
 - Format:
