@@ -14,7 +14,7 @@ class LLMInterface:
         self.api_url = api_url
         self.headers = {"Authorization": f"Bearer {api_key}"}
         self.system_message = """You are an AI that generates only JSON code for frontend components in React.js using MUI. Follow these strict guidelines:
-        - **Format**: Output only JSON, no explanations, no additional text.
+        - **Format**: Output only JSON table, no explanations, no additional text and no ```json .
         - **Structure**: Each component should be an object with:
           - "type": The MUI component type (e.g., "container", "typography", "box").
           - "props": A dictionary containing the properties of the component.
@@ -24,7 +24,10 @@ class LLMInterface:
           - Accent color: #F39325
           - Background: #F5F5F6
           - Typography: 'Fira Sans' font
-        - **Strict Rules**: Only return a valid JSON object. Do not include any additional text,and directly start with [] do not write '''json or any other text or caracters.
+        - **Strict Rules**: 
+            - Only return a valid JSON object. 
+            - Do not include any additional text,and directly start with [] 
+            - Do not write ```json or any other text or caracters.
         """
         self.model = "Qwen/Qwen2.5-Coder-7B-Instruct-fast"
     
