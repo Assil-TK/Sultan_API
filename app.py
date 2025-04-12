@@ -3,6 +3,7 @@ from flask_cors import CORS
 import requests
 import os
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
@@ -46,8 +47,6 @@ You are an AI that generates only valid JSON arrays representing React.js fronte
     - Do not include any explanation or metadata.
     - Do not use markdown fences (like ```json).
 """
-
-
         self.model = "Qwen/Qwen2.5-Coder-7B-Instruct-fast"
     
     def query(self, prompt: str) -> str:
@@ -90,9 +89,15 @@ def generate_code():
     # Initialize LLM Interface and query for code
     llm = LLMInterface(api_url, api_key)
     response = llm.query(prompt)
-    
-    # Return the AI generated code as response
-    return jsonify({"response": response})
+
+    try:
+        # Parse the response to ensure it's valid JSON
+        parsed_response = json.loads(response)
+    except json.JSONDecodeError:
+        return jsonify({"error": "Invalid JSON response from model", "raw_response": response}), 500
+
+    # Return the JSON array directly, no "response" key
+    return jsonify(parsed_response)
 
 if __name__ == "__main__":
     # Set the host to '0.0.0.0' to make it accessible externally (for deployment)
