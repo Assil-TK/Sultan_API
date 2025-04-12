@@ -1,13 +1,13 @@
 from flask import Flask, request, jsonify
-from flask_cors import CORS 
-import requests 
+from flask_cors import CORS
+import requests
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app) 
+CORS(app)
 
 class LLMInterface:
     def __init__(self, api_url: str, api_key: str):
@@ -24,7 +24,7 @@ class LLMInterface:
           - Accent color: #F39325
           - Background: #F5F5F6
           - Typography: 'Fira Sans' font
-        - **Strict Rules**: Only return a valid JSON object. Do not include any additional text.
+        - **Strict Rules**: Only return a valid JSON object. Do not include any additional text,and directly start with [] do not write '''json or any other text or caracters.
         """
         self.model = "Qwen/Qwen2.5-Coder-7B-Instruct-fast"
     
@@ -43,27 +43,35 @@ class LLMInterface:
         else:
             return f"Error: {response.status_code}, {response.text}"
 
-# Route de base
+# Base route
 @app.route('/')
 def home():
     return "Welcome to the AI Code Generator API!"
 
+# Code generation route
 @app.route('/generate', methods=['POST'])
 def generate_code():
     data = request.get_json()
     prompt = data.get("prompt")
+    
+    # Check if prompt is provided
     if not prompt:
         return jsonify({"error": "No prompt provided"}), 400
+
+    api_url = "https://router.huggingface.co/nebius/v1/chat/completions"  # API URL for Hugging Face
+    api_key = os.getenv("HF_API_KEY")  # Ensure you have this in your .env file
     
-    api_url = "https://router.huggingface.co/nebius/v1/chat/completions"
-    api_key = os.getenv("HF_API_KEY")  
-    
+    # Check if API key is available
     if not api_key:
         return jsonify({"error": "API key is missing. Set it in the .env file."}), 500
     
+    # Initialize LLM Interface and query for code
     llm = LLMInterface(api_url, api_key)
     response = llm.query(prompt)
+    
+    # Return the AI generated code as response
     return jsonify({"response": response})
 
 if __name__ == "__main__":
+    # Set the host to '0.0.0.0' to make it accessible externally (for deployment)
     app.run(host="0.0.0.0", port=5000, debug=True)
