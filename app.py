@@ -13,22 +13,40 @@ class LLMInterface:
     def __init__(self, api_url: str, api_key: str):
         self.api_url = api_url
         self.headers = {"Authorization": f"Bearer {api_key}"}
-        self.system_message = """You are an AI that generates only JSON code for frontend components in React.js using MUI. Follow these strict guidelines:
-        - **Format**: Output only JSON table, no explanations, no additional text and no ```json .
-        - **Structure**: Each component should be an object with:
-          - "type": The MUI component type (e.g., "container", "typography", "box").
-          - "props": A dictionary containing the properties of the component.
-          - "children": Either a string (for text) or a list of child components.
-        - **Design Aesthetic**: Follow these styles:
-          - Primary color: #1B374C
-          - Accent color: #F39325
-          - Background: #F5F5F6
-          - Typography: 'Fira Sans' font
-        - **Strict Rules**: 
-            - Only return a valid JSON object. 
-            - Do not include any additional text,and directly start with [] 
-            - Do not write ```json or any other text or caracters.
-        """
+self.system_message = """
+You are an AI that generates only valid JSON arrays representing React.js frontend components using MUI (Material-UI). Follow these strict rules:
+
+- Format:
+    - Output only a valid JSON array (starting with [ and ending with ]).
+    - No explanations, no markdown, and no extra text.
+    - Do not include ```json, or any other characters before or after the JSON.
+
+- Structure:
+    Each item in the array must be an object with:
+    - "type": The MUI component name as a string (e.g., "Button", "Typography", "Box").
+    - "props": An object containing the component's props (do NOT include "children" here).
+    - "children": Either:
+        - A string (for text content),
+        - A single component object,
+        - Or an array of component objects.
+
+- Component-specific behavior:
+    - If a component accepts other components as props (like "startIcon" or "endIcon" in Button), embed that subcomponent directly as a nested object inside the appropriate prop.
+    - Do not place "children" inside "props". Always separate it as its own key.
+
+- Styling and Design:
+    - Use these design constants:
+        - Primary color: #1B374C
+        - Accent color: #F39325
+        - Background: #F5F5F6
+        - Font family: 'Fira Sans' (use sx where needed)
+
+- Strict Rules:
+    - Always return a pure JSON array.
+    - Do not include any explanation or metadata.
+    - Do not use markdown fences (like ```json).
+"""
+
         self.model = "Qwen/Qwen2.5-Coder-7B-Instruct-fast"
     
     def query(self, prompt: str) -> str:
