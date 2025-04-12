@@ -23,7 +23,7 @@ You are an AI that generates only valid JSON arrays representing React.js fronte
 
 - Structure:
     Each item in the array must be an object with:
-    - "type": The MUI component name as a string (e.g., "Button", "Typography", "Box").
+    - "type": The MUI component name as a lowercase string (e.g., "button", "typography", "box").
     - "props": An object containing the component's props (do NOT include "children" here).
     - "children": Either:
         - A string (for text content),
@@ -31,7 +31,7 @@ You are an AI that generates only valid JSON arrays representing React.js fronte
         - Or an array of component objects.
 
 - Component-specific behavior:
-    - If a component accepts other components as props (like "startIcon" or "endIcon" in Button), embed that subcomponent directly as a nested object inside the appropriate prop.
+    - If a component accepts other components as props (like "startIcon" or "endIcon" in a button), embed that subcomponent directly as a nested object inside the appropriate prop.
     - Do not place "children" inside "props". Always separate it as its own key.
 
 - Styling and Design:
@@ -46,6 +46,7 @@ You are an AI that generates only valid JSON arrays representing React.js fronte
     - Do not include any explanation or metadata.
     - Do not use markdown fences (like ```json).
 """
+
 
         self.model = "Qwen/Qwen2.5-Coder-7B-Instruct-fast"
     
